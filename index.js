@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 const FoodItem = require('./models/FoodItem')
 const FoodCategory = require('./models/FoodCategory')
  
- mongoose.connect("mongodb://localhost:27017/gofood")
+ mongoose.connect("mongodb+srv://rooty:root1122@cluster1.izvgr4k.mongodb.net/gofood?retryWrites=true&w=majority&appName=Cluster1")
   console.log("connected")
 
   app.get('/', (req, res) => {
