@@ -7,12 +7,9 @@ app.use(express.json());
 const connectDB = require("./connectMongo");
 
 connectDB();
-const FoodItem = require('../models/FoodItem')
-const FoodCategory = require('../models/FoodCategory')
+const FoodItem = require('./models/FoodItem')
+const FoodCategory = require('./models/FoodCategory')
 
-  app.get('/', (req, res) => {
-    res.send('Hello world')
-  })
   app.post('/foods', (req, res) => {
     Promise.all([
       FoodItem.find().exec(),
@@ -24,7 +21,7 @@ const FoodCategory = require('../models/FoodCategory')
 
   })
 
-  app.use('/api/', require('../routes/CreateUser'))
+  app.use('/api/', require('./routes/CreateUser'))
 
   const PORT = process.env.PORT;
 
