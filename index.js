@@ -1,16 +1,12 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-app.use(cors(
-  // {
-  //   origin; [],
-  //   methods:  ["GET","POST","PUT","DELETE"],
-  //   credentials:true,
-  // }
-));
+require("dotenv").config();
+app.use(cors());
 app.use(express.json());
+const connectDB = require("./connectMongo");
 
-const mongoose = require('mongoose')
+connectDB();
 const FoodItem = require('../models/FoodItem')
 const FoodCategory = require('../models/FoodCategory')
  
@@ -33,7 +29,8 @@ const FoodCategory = require('../models/FoodCategory')
 
   app.use('/api/', require('../routes/CreateUser'))
 
+  const PORT = process.env.PORT;
 
-app.listen(4000, () => {
-    console.log('listening to port')
-}) 
+  app.listen(PORT, () => {
+    console.log("Server is running on port " + PORT);
+  });
