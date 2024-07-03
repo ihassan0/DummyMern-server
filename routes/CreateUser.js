@@ -11,7 +11,7 @@ const Order = require('../models/Order')
         [
             body('email', 'Invalid Email').isEmail(),
             body('name').isLength({ min:5 }),
-            body('password', 'Incorrect Password').isLength({ min:5 }) 
+            body('password', 'Password must be min 5 characters').isLength({ min:5 }) 
         ]
         
         ,(req, res) => {
