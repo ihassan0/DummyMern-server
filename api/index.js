@@ -8,11 +8,11 @@ app.use(cors(
   //   credentials:true,
   // }
 ));
-app.use(bodyParser.json()); app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 const mongoose = require('mongoose')
-const FoodItem = require('./models/FoodItem')
-const FoodCategory = require('./models/FoodCategory')
+const FoodItem = require('../models/FoodItem')
+const FoodCategory = require('../models/FoodCategory')
  
  mongoose.connect("mongodb+srv://rooty:root1122@cluster1.izvgr4k.mongodb.net/gofood?retryWrites=true&w=majority&appName=Cluster1")
   console.log("connected")
@@ -31,7 +31,7 @@ const FoodCategory = require('./models/FoodCategory')
 
   })
 
-  app.use('/api/', require('./routes/CreateUser'))
+  app.use('/api/', require('../routes/CreateUser'))
 
 
 app.listen(4000, () => {
