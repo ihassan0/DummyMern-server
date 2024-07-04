@@ -68,7 +68,7 @@ const FoodCategory = require('./models/FoodCategory')
 
   app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (request, response) => {
     const sig = request.headers['stripe-signature'];
-    const endpointSecret = '';
+    const endpointSecret = 'whsec_1Im9mZO8LV3fI44ep3YR6NZFSlO2EKKE';
     let event;
   
     try {
