@@ -50,7 +50,7 @@ const FoodCategory = require('./models/FoodCategory')
           quantity: item.qty,
         })),
         mode: 'payment',
-        success_url: 'http://localhost:5173/',
+        success_url: 'https://foodie-client-orpin.vercel.app/',
         cancel_url: 'https://foodie-client-orpin.vercel.app/',
         metadata: {
           email,
@@ -68,7 +68,7 @@ const FoodCategory = require('./models/FoodCategory')
 
   app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (request, response) => {
     const sig = request.headers['stripe-signature'];
-    const endpointSecret = 'whsec_YOUR_WEBHOOK_SECRET'; // Replace with your webhook secret
+    const endpointSecret = '';
     let event;
   
     try {
