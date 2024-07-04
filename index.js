@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const bodyParser = require('body-parser');
+const Order = require('./models/Order')
 require("dotenv").config();
 app.use(cors());
 // app.use(express.json());
@@ -31,6 +32,7 @@ const FoodCategory = require('./models/FoodCategory')
   app.post('/api/create-checkout-session', async (req, res) => {
     try {
       const { order_data, email, order_date } = req.body;
+      // console.log(order_data)
   
       // Check if order_data is provided and is an array
       if (!order_data || !Array.isArray(order_data)) {
@@ -41,13 +43,13 @@ const FoodCategory = require('./models/FoodCategory')
         payment_method_types: ['card'],
         line_items: order_data.map(item => ({
           price_data: {
-            currency: 'pkr',
+            currency: 'usd',
             product_data: {
               name: item.name,
             },
             unit_amount: item.price * 100,
           },
-          quantity: item.qty,
+          quantity: 1,
         })),
         mode: 'payment',
         success_url: 'https://foodie-client-orpin.vercel.app/',
@@ -57,56 +59,29 @@ const FoodCategory = require('./models/FoodCategory')
           order_date,
         },
       });
-  
-      res.json({ id: session.id });
-    } catch (error) {
+      // Create order in the database
+    let eId = await Order.findOne({ 'email': email });
+    if (!eId) {
+      try {
+        await Order.create({
+          email: email,
+          order_data: [order_data],
+          order_date: order_date,
+          status: 'pending', // You can add other order details as needed
+        });
+        console.log('Order created successfully');
+      } catch (error) {
+        console.error('Error creating order:', error);
+        return res.status(500).json({ error: 'Error creating order' });
+      }
+    }
+
+    res.json({ id: session.id });
+  } catch (error) {
       console.error('Error creating checkout session:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
-
-
-  app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (request, response) => {
-    const sig = request.headers['stripe-signature'];
-    const endpointSecret = 'whsec_1Im9mZO8LV3fI44ep3YR6NZFSlO2EKKE';
-    let event;
-  
-    try {
-      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    } catch (err) {
-      console.log(`Webhook Error: ${err.message}`);
-      return response.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-  
-      // Fulfill the purchase...
-      handleCheckoutSession(session);
-    }
-  
-    response.json({ received: true });
-  });
-  
-  const handleCheckoutSession = async (session) => {
-    // Create the order in your database
-    const { email, order_date } = session.metadata;
-    const order_data = session.display_items.map(item => ({
-      name: item.custom.name,
-      price: item.amount / 100,
-      qty: item.quantity,
-    }));
-  
-    await Order.create({
-      email,
-      order_data: [order_data],
-    }).then(() => {
-      console.log('Order created successfully');
-    }).catch((error) => {
-      console.error('Error creating order:', error);
-    });
-  };
-
   const PORT = process.env.PORT;
 
   app.listen(PORT, () => {
