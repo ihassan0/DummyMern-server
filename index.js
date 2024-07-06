@@ -32,13 +32,10 @@ const FoodCategory = require('./models/FoodCategory')
   app.post('/api/create-checkout-session', async (req, res) => {
     try {
       const { order_data, email, order_date } = req.body;
-      // console.log(order_data)
-  
-      // Check if order_data is provided and is an array
+      console.log(req.body)
       if (!order_data || !Array.isArray(order_data)) {
         return res.status(400).json({ error: 'Invalid order data' });
       }
-  
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: order_data.map(item => ({
@@ -59,22 +56,6 @@ const FoodCategory = require('./models/FoodCategory')
           order_date,
         },
       });
-      // Create order in the database
-    let eId = await Order.findOne({ 'email': email });
-    if (!eId) {
-      try {
-        await Order.create({
-          email: email,
-          order_data: [order_data],
-          order_date: order_date,
-          status: 'pending', // You can add other order details as needed
-        });
-        console.log('Order created successfully');
-      } catch (error) {
-        console.error('Error creating order:', error);
-        return res.status(500).json({ error: 'Error creating order' });
-      }
-    }
 
     res.json({ id: session.id });
   } catch (error) {
